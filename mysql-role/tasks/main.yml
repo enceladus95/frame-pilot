@@ -1,2 +1,29 @@
 ---
-# tasks file for mysql-role
+
+- name: Install mysql server
+  yum: name={{ item }} state=installed
+  with_items:
+    - MySQL-python
+    - libselinux-python
+    #- "{{ mysql_pkgs }}"
+
+- name: Copy mycnf file
+  template: src=myCentos.cnf.j2 dest=/etc/my.cnf
+  notify:
+    - restart mysql
+
+- name: Create directory /etc/mysql/conf.d
+  file: path=/etc/mysql/conf.d state=directory
+  notify:
+    - restart mysql
+
+- name: Deploy mysql config to conf.d
+  template: src=mysql.cnf.j2 dest=/etc/mysql/conf.d/mysql.conf
+  notify:
+    - restart mysql
+
+- name: Start mysql service
+  service: name=mysqld state=started enabled=yes
+
+- name: copy .my.cnf file with root password credentials
+  template: src=.my.cnf.j2 dest=~/.my.cnf mode=0600
