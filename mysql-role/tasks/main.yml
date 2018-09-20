@@ -5,6 +5,8 @@
   with_items:
     - MySQL-python
     - libselinux-python
+    - mysql-libs
+    - mysql-connector-java
 
 - name: Install WGET
   yum: name=wget state=installed
@@ -18,23 +20,33 @@
 - name: Install mySQL
   yum: name=mysql-server state=installed
 
+- name: ensure mysql started
+  service: name=mysqld state=started enabled=yes
+
+
+- name: ensure mysql started
+  service: name=mysqld state=started enabled=yes
+
+- name: my cnf file to root
+  template: src=../templates/.my.cnf.j2 dest=/root owner=1000 mode=0600
+
+- name: my cnf file to centos
+  template: src=../templates/.my.cnf.j2 dest=/home/centos owner=centos group=centos mode=0600
+
 - name: Copy mycnf file
   template: src=myCentos.cnf.j2 dest=/etc/my.cnf
   notify:
     - restart mysql
 
-- name: Create directory /etc/mysql/conf.d
-  file: path=/etc/mysql/conf.d state=directory
-  notify:
-    - restart mysql
+- name: Create a database
+  mysql_db:
+    name: demodb
+    state: present
 
-- name: Deploy mysql config to conf.d
-  template: src=mysql.cnf.j2 dest=/etc/mysql/conf.d/mysql.conf
-  notify:
-    - restart mysql
 
-- name: Create directory /usr/mysql/
-  file: path=/usr/mysql/ state=directory
-
-- name: Start mysql service
-  service: name=mysqld state=started enabled=yes
+- name: Create a user
+  mysql_user:
+    name: jana
+    password: root
+    priv: '*.*:ALL'
+    state: present
