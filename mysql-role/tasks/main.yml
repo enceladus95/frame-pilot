@@ -47,6 +47,6 @@
 - name: Create a user
   mysql_user:
     name: jana
-    password: root
+    password: "root"
     priv: '*.*:ALL'
     state: present
