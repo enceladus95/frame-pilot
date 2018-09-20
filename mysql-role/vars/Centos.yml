@@ -1,10 +1,6 @@
 ---
-mysql_pkgs:
-   - MySQL-python
-  #- libselinux-python
-  #- mysql-server
+mysql_daemon: mariadb
 
-mysql_service:
-  - mysqld
-
-mysqlconf_dir: /etc/
+mysql_config_file: /etc/my.cnf
+mysql_config_include_dir: /etc/my.cnf.d
+mysql_socket: /var/lib/mysql/mysql.sock
